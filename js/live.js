@@ -1,6 +1,14 @@
+// const urls must end with slash "/"
+const webchan_url = "https://chan.qaq.link/";
+const wss_url     = "wss://chan.qaq.link/websocket/";
+const live_url    = "https://live.qaq.link/live/";
+const live_root   = "https://live.qaq.link/";
+const use_danmaku = true;
+
+
 function show_not_ready_text() {
     $("#video").remove();
-    $("#not_ready_text").text(roomid + " 未开播");
+    $("#not_ready_text").text(roomid_decoded + " 未开播");
     $("#not_ready_text").css("position", "absolute");
     $("#not_ready_text").css("font-size", "xxx-large");
     $("#not_ready_text").css("color", "white");
@@ -13,41 +21,49 @@ function show_not_ready_text() {
 function load_history() {
     let to_time = Math.floor(new Date().getTime() / 1000);
     let from_time = to_time - 8*60*60; // last 8 hours
-    let query_url = "https://chan.qaq.link/" + roomid + "/" + from_time;
+    let query_url = webchan_url + roomid + "/" + from_time;
     $.get(query_url, function(data) {
         damoo_history += data;
         $("#damoo_history").val(damoo_history);
     });
 }
 
-const use_danmaku = true;
 let damoo = null;
 let damoo_history = "";
-
 let roomid = window.location.pathname.split("/")[1];
+let roomid_decoded = decodeURI(roomid);
+
 if (roomid == "") {
     // show top lives
     document.title = "QAQ Live";
-        $.getJSON("https://chan.qaq.link/recent", function(data){
-            let content = "<h3> Top Lives </h3>";
-            content += "<table border=1 cellpadding=8 cellspacing=0>";
-            content += "<tr> <th>直播间</th> <th>人气</th> <th>最近弹幕时间</th> </tr>";
-            for(let i = 0; i<data.length; i++) {
-                let recent = data[i];
-                content += '<td><a href="/' + recent["Chan"] + '">' + recent["Chan"] + '</a></td>';
-                content += '<td>' + recent["Act"]["Count"] + '</td>';
-                content += '<td>' + $.timeago(recent["Act"]["LastTime"]*1000) + '</td>';
-                content += '</tr>';
+    $.getJSON(webchan_url + "recent", function(data){
+        let content = "<h3> Top Lives </h3>";
+        content += "<table border=1 cellpadding=8 cellspacing=0>";
+        content += "<tr> <th>直播间</th> <th>人气</th> <th>最近弹幕时间</th> </tr>";
+        for(let i = 0; i<data.length; i++) {
+            let recent = data[i];
+            content += '<td><a href="/' + recent["Chan"] + '">' + recent["Chan"] + '</a></td>';
+            content += '<td>' + recent["Act"]["Count"] + '</td>';
+            content += '<td>' + $.timeago(recent["Act"]["LastTime"]*1000) + '</td>';
+            content += '</tr>';
+        }
+        content += "</table>";
+        $.getJSON(live_root + "_stat", function(data2){
+            content += "<br><br><h3> All Lives </h3>";
+            for(let j=0;j<data2["publishers"].length; j++) {
+                let app_room = data2["publishers"][j]["key"];
+                let room = app_room.split('/')[1];
+                content += '<a href="/' + room + '"><h5>' + room + '</h5></a>';
             }
-            content += "</table>";
             $("body").html(content);
         });
+    });
 } else {
     // load history from webchan
     load_history();
 
     // setup title
-    document.title = roomid +  " - QAQ Live";
+    document.title = roomid_decoded +  " - QAQ Live";
     // setup video
     $("body").css("background-color", "black");
     $("#video_div").html('<video controls="controls" id="video" width="100%" height="100%"></video><div id="video_overlay"></div>');
@@ -55,7 +71,7 @@ if (roomid == "") {
     let video = document.getElementById('video');
     if (Hls.isSupported()) {
         let hls = new Hls();
-        hls.loadSource('https://live.qaq.link/live/' + roomid + '.m3u8');
+        hls.loadSource(live_url + roomid + '.m3u8');
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function () {
             video.play();
@@ -65,7 +81,7 @@ if (roomid == "") {
         });
     }
     else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = 'https://live.qaq.link/live/' + roomid + '.m3u8';
+        video.src = live_url + roomid + '.m3u8';
         video.addEventListener('loadedmetadata', function () {
             video.play();
         });
@@ -93,7 +109,7 @@ if (roomid == "") {
 
     // setup websocket
     let sock = null;
-    let wsuri = "wss://chan.qaq.link/websocket/" + roomid;
+    let wsuri = wss_url + roomid;
     sock = new WebSocket(wsuri);
     sock.onmessage = function(e) {
         let msg = e.data.split('|').slice(1).join('|');
@@ -134,7 +150,7 @@ if (roomid == "") {
             window.localStorage.setItem("username", username);
             let msg = username + ": " + $("#screenBulletText").val();
             $("#screenBulletText").val("");
-            $.post("https://chan.qaq.link/"+roomid, msg);
+            $.post(webchan_url + roomid, msg);
             return false;
         }
     });

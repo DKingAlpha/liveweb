@@ -19,6 +19,10 @@
     transition: opacity 2s;
 }
 
+.screen_toolbar>input {
+    font-size: large;
+}
+
 #screenBulletUser {
     width: 15%;
     background-color: rgba(0, 0, 0, 0.8);
@@ -46,6 +50,7 @@
     background-color: rgba(0,0,0,0); /* Black background with opacity */
     z-index: 0; /* Specify a stack order in case you're using a different order for other elements */
     cursor: pointer; /* Add a pointer on hover */
+    pointer-events: none;
 }
 
 #damoo_history:hover {
@@ -54,9 +59,10 @@
     top: 0px;
     z-index: 5;
     opacity: 1;
-
     background-color: black;
     color: white;
+    border: 0;
+    font-size: large;
 }
 
 #damoo_history:not(:hover) {
@@ -66,8 +72,16 @@
     z-index: 5;
     opacity: 0;
     transition: opacity 1s;
-
-    
     background-color: black;
     color: white;
+    border: 0;
+    font-size: large;
+}
+
+::-webkit-resizer {
+    display: none;
+}
+
+#not_ready_text {
+    margin: 0 0 0 0;
 }
