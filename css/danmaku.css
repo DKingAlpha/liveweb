@@ -1,0 +1,73 @@
+.screen_toolbar:hover {
+    width: 600px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    z-index: 99;
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}
+
+.screen_toolbar:not(:hover) {
+    width: 600px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    z-index: 99;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 2s;
+}
+
+#screenBulletUser {
+    width: 15%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 3px;
+    border-color: gray;
+}
+
+#screenBulletText {
+    width: 80%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 3px;
+    border-color: gray;
+}
+
+#video_overlay {
+    position: fixed; /* Sit on top of the page content */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0); /* Black background with opacity */
+    z-index: 0; /* Specify a stack order in case you're using a different order for other elements */
+    cursor: pointer; /* Add a pointer on hover */
+}
+
+#damoo_history:hover {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 5;
+    opacity: 1;
+
+    background-color: black;
+    color: white;
+}
+
+#damoo_history:not(:hover) {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 1s;
+
+    
+    background-color: black;
+    color: white;
+}
